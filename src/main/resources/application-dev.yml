@@ -1,0 +1,87 @@
+server:
+  port: ${whiteboard-config.server_port}
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    encoding:             #解决中文乱码问题，同一使用UTF-8编码
+      charset: UTF-8
+      force: true
+      enabled: true
+      force-request: true
+      force-response: true
+  shutdown: graceful      # 优雅停机 ，kill -2 或post请求/actuator/shutdown，不能使用kill -9
+
+spring:
+  flyway:
+    enabled: false              #flyway 是否启用开关，true启用，false禁用
+    # 禁止清理数据库表
+    clean-disabled: true
+    baseline-description: baselines
+    # 如果数据库不是空表，需要设置成 true，否则启动报错
+    baseline-on-migrate: true
+    baseline-version: 2
+
+  swagger2:
+    enabled: false
+mybatis:
+  mapper-locations: classpath:mybatis/*.xml
+
+logging:
+  config: classpath:logback-config.xml
+
+
+whiteboard:
+  datasource:
+    driverclassname: com.mysql.jdbc.Driver
+    url: jdbc:mysql://${whiteboard-config.db_host}:${whiteboard-config.db_port}/${whiteboard-config.db_name}?allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=utf8&useCompress=true
+    username: ${whiteboard-config.db_user}
+    password: ${whiteboard-config.db_password}
+    maximum-pool-size: 20
+
+#######################
+
+whiteboard-config:
+  # 认证 Cookie 名称，请根据业务自行定义，如：rong_im_auth
+  auth_cookie_name: key_auth_cookie
+  # 认证 Cookie 加密密钥，请自行定义，任意字母数字组合
+  auth_cookie_key: abcd
+  # 认证 Cookie 过期时间，有效期单位秒 8640000=100天
+  auth_cookie_max_age: 8640000
+  # 融云颁发的 App Key，请访问融云开发者后台：https://developer.rongcloud.cn
+  rongcloud_app_key: xxxxxx
+  # 融云颁发的 App Secret，请访问融云开发者后台：https://developer.rongcloud.cn
+  rongcloud_app_secret: xxxxx
+  # 融云颁发的 Api Url, 逗号分割，第一个为主域名，后面的为备份域名 ,国内数据中心 api-cn.ronghub.com,api2-cn.ronghub.com 新加坡数据中心 api-sg01.ronghub.com
+  rongcloud_api_url: https://api-bj.ronghub.com
+  # api V1
+  rongcloud_api_v1_url: api-bj.ronghub.com
+  # 默认头像地址
+  rongcloud_default_portrait_url: http://www.rongcloud.cn/images/icon-57.png
+  #短信服务商 ,取值 1 yunpian ,2 融云,默认融云
+  sms_service_type: 2
+  # dev 注册环节不发短信，默认验证码9999，非dev会发送短信
+  config_env: dev
+  # 短信发送接口频率限制(根据IP地址)，自定义配置,不配置默认不限制
+  sms_app_key: xxxxxx
+  sms_app_secret: xxxxxxx
+  sms_limited_time: 1     #单位小时 ，1小时，自定义配置
+  sms_limited_count: 100   #发送验证码次数限制 100次
+  # N3D 密钥，用来加密所有的 Id 数字，不小于 5 位的字母数字组合
+  n3d_key: 11EdDIauqcim
+  # 认证 Cookie 主域名 如果没有正式域名，请修改本地 hosts 文件配置域名，此处设置 Cookie 主域名， 必须和 CORS_HOSTS 配置项在相同的顶级域下
+  auth_cookie_domain: devwhiteboard.im
+  # 跨域支持所需配置的域名信息，包括请求服务器的域名和端口号，如果是 80 端口可以省略端口号。如：http://web.whiteboard.im
+  cors_hosts:  http://10.0.3.195
+  exclude_url: /user/verify_code_register, /user/send_code,/ping,/records,/player
+  # 本服务监听的 HTTP 端口号
+  server_port: 8080
+  # MySQL 数据库名称
+  db_name: whiteboard
+  # MySQL 数据库用户名
+  db_user: root
+  # MySQL 数据库密码
+  db_password: 1234qwer
+  # MySQL 数据库服务器地址
+  db_host: 127.0.0.1
+  # MySQL 数据库服务端口号
+  db_port: 3306
